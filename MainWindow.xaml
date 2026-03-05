@@ -109,198 +109,151 @@
                     </RichTextBox>
 
                     <ScrollViewer Grid.Row="1" x:Name="AddonDisplay" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
-                        <Border Background="#F51E1E1E" Padding="20">
+                        <Border Background="#F51E1E1E" Padding="15">
                             <StackPanel>
-                                <TextBlock Text="키워드 알림 설정" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
-                                <CheckBox Content="색상 강조" IsChecked="{Binding UseAlertColor}" 
-                        Foreground="White" Margin="0,0,20,0" FontSize="14"/>
-                                <CheckBox Content="알림음 재생" IsChecked="{Binding UseAlertSound}" 
-                        Foreground="White" FontSize="14"/>
-                                <TextBlock Text="알림 키워드 입력 (@단어1 @단어2 형식)" Foreground="#AAA" FontSize="13" Margin="0,0,0,5"/>
-                                <TextBox x:Name="KeywordBox" 
-                     Text="{Binding KeywordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextChanged="KeywordBox_TextChanged"
-                     Background="#333" Foreground="White" BorderBrush="#555" 
-                     Padding="10" FontSize="15" AcceptsReturn="True" TextWrapping="Wrap" Height="100"/>
 
-                                <TextBlock Text="* 입력 시 자동으로 저장됩니다." Foreground="#60FFFFFF" FontSize="11" Margin="0,5,0,0"/>
-                                <TextBlock Text="경험치 추적" Foreground="White" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                                <Border BorderBrush="#33FFFFFF" BorderThickness="0,0,0,1" Margin="0,0,0,15" Padding="0,0,0,15">
+                                    <StackPanel>
+                                        <TextBlock Text="키워드 알림 설정" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
 
-                                <CheckBox Content="경험치 추적기능 활성화" 
-                                    IsChecked="{Binding ShowExpTracker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    Foreground="White" FontSize="14" Margin="0,0,0,10"/>
-                                <TextBlock Text="* 활성화 시 화면 상단에 실시간 획득량이 표시됩니다." 
-               Foreground="#888" FontSize="11" Margin="0,10,0,0"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <CheckBox Content="색상 강조" IsChecked="{Binding UseAlertColor}" 
+                                  Foreground="White" Margin="0,0,20,0" FontSize="13"/>
+                                            <CheckBox Content="알림음 재생" IsChecked="{Binding UseAlertSound}" 
+                                  Foreground="White" FontSize="13"/>
+                                        </StackPanel>
+
+                                        <TextBlock Text="알림 키워드 입력 (@단어1 @단어2 형식)" Foreground="#AAA" FontSize="12" Margin="0,5,0,5"/>
+                                        <TextBox x:Name="KeywordBox" 
+                             Text="{Binding KeywordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             TextChanged="KeywordBox_TextChanged"
+                             Background="#333" Foreground="White" BorderBrush="#555" 
+                             Padding="10" FontSize="14" AcceptsReturn="True" TextWrapping="Wrap" Height="80"/>
+                                        <TextBlock Text="* 입력 시 자동으로 저장됩니다." Foreground="#60FFFFFF" FontSize="11" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel>
+                                    <TextBlock Text="경험치 추적" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                                    <CheckBox Content="경험치 추적기능 활성화" 
+                          IsChecked="{Binding ShowExpTracker, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Foreground="White" FontSize="13" Margin="0,0,0,8"/>
+
+                                    <TextBlock Text="* 활성화 시 화면 상단에 실시간 획득량이 표시됩니다." 
+                           Foreground="#888" FontSize="11" Margin="0,0,0,0"/>
+                                </StackPanel>
 
                             </StackPanel>
-
                         </Border>
                     </ScrollViewer>
 
                     <ScrollViewer Grid.Row="1" x:Name="SettingsDisplay" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
                         <Border Background="#F51E1E1E" Padding="15">
                             <StackPanel>
-                                <TextBlock Text="오버레이 설정" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+                                <TextBlock Text="오버레이 설정" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1.2*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
+                                <Border BorderBrush="#33FFFFFF" BorderThickness="0,0,0,1" Margin="0,0,0,20" Padding="0,0,0,20">
+                                    <StackPanel>
+                                        <TextBlock Text="채팅 필터 및 색상" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,12"/>
 
-                                    <StackPanel Grid.Column="0" Margin="0,0,15,0">
-                                        <TextBlock Text="채팅 필터" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,10"/>
-                                        <UniformGrid Columns="2">
-                                            <CheckBox Content="일반" IsChecked="{Binding ShowNormal}" Foreground="White" FontSize="12" Margin="0,4"/>
-                                            <Button Width="30" Height="20" HorizontalAlignment="Right" 
-                                                Background="{Binding NormalColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                Click="ColorPick_Click" Tag="Normal" BorderBrush="White" BorderThickness="1"/>
+                                        <UniformGrid Columns="2" Margin="5,0,0,0">
+                                            <Grid Margin="0,5,15,5">
+                                                <CheckBox Content="일반" IsChecked="{Binding ShowNormal}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Button Width="35" Height="18" HorizontalAlignment="Right"
+                        Background="{Binding NormalColor}" Click="ColorPick_Click" Tag="Normal" 
+                        BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                                            </Grid>
 
-                                            <CheckBox Content="팀" IsChecked="{Binding ShowTeam}" Foreground="White" FontSize="12" Margin="0,4"/>
-                                            <Button Width="30" Height="20" HorizontalAlignment="Right" 
-                                                Background="{Binding TeamColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                Click="ColorPick_Click" Tag="Team" BorderBrush="White" BorderThickness="1"/>
+                                            <Grid Margin="15,5,0,5">
+                                                <CheckBox Content="팀" IsChecked="{Binding ShowTeam}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Button Width="35" Height="18" HorizontalAlignment="Right"
+                        Background="{Binding TeamColor}" Click="ColorPick_Click" Tag="Team" 
+                        BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                                            </Grid>
 
-                                            <CheckBox Content="클럽" IsChecked="{Binding ShowClub}" Foreground="White" FontSize="12" Margin="0,4"/>
-                                            <Button Width="30" Height="20" HorizontalAlignment="Right" 
-                                                Background="{Binding ClubColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                Click="ColorPick_Click" Tag="Club" BorderBrush="White" BorderThickness="1"/>
+                                            <Grid Margin="0,5,15,5">
+                                                <CheckBox Content="클럽" IsChecked="{Binding ShowClub}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Button Width="35" Height="18" HorizontalAlignment="Right"
+                        Background="{Binding ClubColor}" Click="ColorPick_Click" Tag="Club" 
+                        BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                                            </Grid>
 
-                                            <CheckBox Content="외치기" IsChecked="{Binding ShowShout}" Foreground="White" FontSize="12" Margin="0,4"/>
-                                            <Button Width="30" Height="20" HorizontalAlignment="Right" 
-                                                Background="{Binding ShoutColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                Click="ColorPick_Click" Tag="Shout" BorderBrush="White" BorderThickness="1"/>
+                                            <Grid Margin="15,5,0,5">
+                                                <CheckBox Content="외치기" IsChecked="{Binding ShowShout}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Button Width="35" Height="18" HorizontalAlignment="Right"
+                        Background="{Binding ShoutColor}" Click="ColorPick_Click" Tag="Shout" 
+                        BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                                            </Grid>
 
-                                            <CheckBox Content="시스템" IsChecked="{Binding ShowSystem}" Foreground="White" FontSize="12" Margin="0,4"/>
-                                            <Button Width="30" Height="20" HorizontalAlignment="Right" 
-                                                Background="{Binding SystemColor, UpdateSourceTrigger=PropertyChanged}" 
-                                                Click="ColorPick_Click" Tag="System" BorderBrush="White" BorderThickness="1"/>
+                                            <Grid Margin="0,5,15,5">
+                                                <CheckBox Content="시스템" IsChecked="{Binding ShowSystem}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <Button Width="35" Height="18" HorizontalAlignment="Right"
+                        Background="{Binding SystemColor}" Click="ColorPick_Click" Tag="System" 
+                        BorderBrush="White" BorderThickness="1" Cursor="Hand"/>
+                                            </Grid>
                                         </UniformGrid>
                                     </StackPanel>
+                                </Border>
 
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="폰트 크기" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,8"/>
-                                        <DockPanel Margin="0,5">
-                                            <TextBlock Text="크기" Foreground="White" FontSize="12" Width="35" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding FontSize, StringFormat={}{0:F0}}" Foreground="#AAA" FontSize="18" DockPanel.Dock="Right" Width="35" TextAlignment="Right"/>
-                                            <Slider Minimum="10" Maximum="40" 
-                                                Value="{Binding FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                TickFrequency="1" IsSnapToTickEnabled="True"/>
-                                        </DockPanel>
-                                    
-                                        <DockPanel Margin="0,5">
-                                            <TextBlock Text="X좌표 (좌우)" Foreground="White" FontSize="12" Width="80" VerticalAlignment="Center"/>
+                                <Border BorderBrush="#33FFFFFF" BorderThickness="0,0,0,1" Margin="0,0,0,20" Padding="0,0,0,20">
+                                    <StackPanel>
+                                        <TextBlock Text="텍스트 설정" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,12"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
 
-                                            <TextBox Text="{Binding LineMarginLeft, UpdateSourceTrigger=LostFocus}" 
-                 Width="100" Height="25" 
-                 Background="#444" Foreground="White" 
-                 BorderThickness="1" BorderBrush="#888"
-                 VerticalContentAlignment="Center" TextAlignment="Center"
-                 DockPanel.Dock="Right"
-                 KeyDown="OffsetInput_KeyDown" 
-                 LostFocus="OffsetInput_LostFocus" 
-                 PreviewTextInput="NumberOnly_PreviewTextInput"/>
-                                        </DockPanel>
+                                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                                <TextBlock Text="폰트 종류" Foreground="#888" FontSize="12" Margin="0,0,0,5"/>
+                                                <ComboBox ItemsSource="{Binding AvailableFonts}" 
+                                      SelectedItem="{Binding FontFamily, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Height="30" VerticalContentAlignment="Center">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding}" FontFamily="{Binding}" FontSize="14"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </StackPanel>
 
-                                        <DockPanel Margin="0,5">
-                                            <TextBlock Text="Y좌표 (상하)" Foreground="White" FontSize="12" Width="80" VerticalAlignment="Center"/>
-
-                                            <TextBox Text="{Binding LineMargin, UpdateSourceTrigger=LostFocus}" 
-                 Width="100" Height="25" 
-                 Background="#444" Foreground="White" 
-                 BorderThickness="1" BorderBrush="#888"
-                 VerticalContentAlignment="Center" TextAlignment="Center"
-                 DockPanel.Dock="Right"
-                 KeyDown="OffsetInput_KeyDown" 
-                 LostFocus="OffsetInput_LostFocus" 
-                 PreviewTextInput="NumberOnly_PreviewTextInput"/>
-                                        </DockPanel>
+                                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                                <TextBlock Text="크기" Foreground="#888" FontSize="12" Margin="0,0,0,5"/>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding FontSize, StringFormat={}{0:F0}}" Foreground="White" Width="25" DockPanel.Dock="Right" TextAlignment="Right" VerticalAlignment="Center"/>
+                                                    <Slider Minimum="10" Maximum="40" Value="{Binding FontSize}" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </Grid>
                                     </StackPanel>
-                                </Grid>
+                                </Border>
 
-                                <Separator Margin="0,15" Background="#444"/>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1.2*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Margin="0,0,15,0">
-                                        <TextBlock Text="폰트 설정" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,8"/>
-                                        <ComboBox ItemsSource="{Binding AvailableFonts}" 
-                                                SelectedItem="{Binding FontFamily, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Height="32" Width="200" HorizontalAlignment="Left"
-                                                VerticalContentAlignment="Center">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock x:Name="FontText" Text="{Binding}" FontSize="18" Margin="5,2">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="FontFamily" Value="{Binding}"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding}" Value="사용자 설정">
-                                                                        <Setter Property="FontFamily" Value="{Binding CurrentFont, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                                                                        <Setter Property="Text" Value="사용자 설정"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                        <CheckBox Content="경험치 트래커 표시" IsChecked="{Binding ShowExpTracker}"  Visibility="Hidden"
-                              Foreground="White" FontSize="15" Margin="0,15,0,0"/>
+                                <Border Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="위치 설정" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,0,0,12"/>
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="0,0,10,0">
+                                                <TextBlock Text="X 좌표 (좌우)" Foreground="#888" FontSize="12" Margin="0,0,0,5"/>
+                                                <TextBox Text="{Binding LineMarginLeft, UpdateSourceTrigger=LostFocus}" 
+                                     Height="28" Background="#333" Foreground="White" BorderBrush="#555"
+                                     VerticalContentAlignment="Center" TextAlignment="Center"
+                                     PreviewTextInput="NumberOnly_PreviewTextInput" KeyDown="OffsetInput_KeyDown"/>
+                                            </StackPanel>
+                                            <StackPanel Margin="10,0,0,0">
+                                                <TextBlock Text="Y 좌표 (상하)" Foreground="#888" FontSize="12" Margin="0,0,0,5"/>
+                                                <TextBox Text="{Binding LineMargin, UpdateSourceTrigger=LostFocus}" 
+                                     Height="28" Background="#333" Foreground="White" BorderBrush="#555"
+                                     VerticalContentAlignment="Center" TextAlignment="Center"
+                                     PreviewTextInput="NumberOnly_PreviewTextInput" KeyDown="OffsetInput_KeyDown"/>
+                                            </StackPanel>
+                                        </UniformGrid>
                                     </StackPanel>
-                                </Grid>
-                                <UniformGrid Columns="2" Margin="0,25,0,0">
-                                    <Button Content="모든 설정 초기화" 
-            Height="35" 
-            FontSize="14" 
-            Click="InitSettings_Click"
-            Background="#44FFFFFF" 
-            Foreground="White"
-            Margin="0,0,5,0">
-                                        <Button.Resources>
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="5"/>
-                                            </Style>
-                                        </Button.Resources>
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#66FFFFFF"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
+                                </Border>
 
-                                    <Button Content="프로그램 종료" 
-            Height="35" 
-            FontSize="14" 
-            FontWeight="Bold"
-            Click="ExitApp_Click"
-            Background="#88FF4444" 
-            Foreground="White"
-            Margin="5,0,0,0">
-                                        <Button.Resources>
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="5"/>
-                                            </Style>
-                                        </Button.Resources>
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#FFFF4444"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
+                                <UniformGrid Columns="2" Margin="0,20,0,0">
+                                    <Button Content="설정 초기화" Height="32" Margin="0,0,5,0" Click="InitSettings_Click" Background="#30FFFFFF" Foreground="White"/>
+                                    <Button Content="프로그램 종료" Height="32" Margin="5,0,0,0" Click="ExitApp_Click" Background="#60FF4444" Foreground="White" FontWeight="Bold"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
