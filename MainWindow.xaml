@@ -62,7 +62,7 @@
                 Click="ResetExp_Click" 
                 DockPanel.Dock="Right"
                 Foreground="#888" Background="Transparent" BorderThickness="0" 
-                FontSize="18" Margin="5,-4,0,0" Cursor="Hand" VerticalAlignment="Center"/>
+                FontSize="18" Margin="5,-8,0,0" Cursor="Hand" VerticalAlignment="Center"/>
 
                 <TextBlock Text="{Binding TotalExpDisplay}" 
                    Foreground="#FFCC00" 

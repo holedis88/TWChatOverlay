@@ -35,15 +35,25 @@ namespace TWChatOverlay.Services
 
         private void UpdateDpi()
         {
+            // PresentationSource가 null일 경우를 대비해 Handle로 찾기
+            var hwnd = new WindowInteropHelper(_overlayWindow).Handle;
             var source = PresentationSource.FromVisual(_overlayWindow);
+
             if (source?.CompositionTarget != null)
             {
                 _dpiX = source.CompositionTarget.TransformToDevice.M11;
                 _dpiY = source.CompositionTarget.TransformToDevice.M22;
             }
+            else if (hwnd != IntPtr.Zero)
+            {
+                // 윈도우 10 이상에서 핸들로 DPI 가져오기 (fallback)
+                uint dpi = NativeMethods.GetDpiForWindow(hwnd);
+                _dpiX = _dpiY = dpi / 96.0;
+            }
 
+            // 방어 코드 수정: 0 이하일 때만 1.0(100%)으로 초기화
             if (_dpiX <= 0) _dpiX = 1.0;
-            if (_dpiY <= 1) _dpiY = 1.0;
+            if (_dpiY <= 0) _dpiY = 1.0;
         }
 
         private void UpdatePosition()
@@ -67,7 +77,6 @@ namespace TWChatOverlay.Services
             IntPtr foregroundHwnd = OverlayHelper.GetForegroundWindow();
             IntPtr myHwnd = new WindowInteropHelper(_overlayWindow).Handle;
 
-            // 게임창이나 오버레이가 포커스 상태가 아니면 숨김
             if (foregroundHwnd != _gameHwnd && foregroundHwnd != myHwnd)
             {
                 if (_overlayWindow.Visibility != Visibility.Collapsed)
@@ -83,6 +92,8 @@ namespace TWChatOverlay.Services
 
             if (_gameHwnd != IntPtr.Zero)
             {
+                UpdateDpi();
+
                 var rect = OverlayHelper.GetActualRect(_gameHwnd);
 
                 double gameWidth = (rect.Right - rect.Left) / _dpiX;
@@ -124,6 +135,9 @@ namespace TWChatOverlay.Services
 
         private static class NativeMethods
         {
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            public static extern uint GetDpiForWindow(IntPtr hwnd);
+
             [System.Runtime.InteropServices.DllImport("user32.dll")]
             [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
             public static extern bool IsWindow(IntPtr hWnd);
