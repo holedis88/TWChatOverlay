@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using TWChatOverlay.Models;
 
@@ -58,7 +59,7 @@ namespace TWChatOverlay.Services
 #else
             if (_gameHwnd == IntPtr.Zero)
             {
-                if (_overlayWindow.Visibility != Visibility.Collapsed) 
+                if (_overlayWindow.Visibility != Visibility.Collapsed)
                     _overlayWindow.Visibility = Visibility.Collapsed;
                 return;
             }
@@ -69,13 +70,13 @@ namespace TWChatOverlay.Services
             // 게임창이나 오버레이가 포커스 상태가 아니면 숨김
             if (foregroundHwnd != _gameHwnd && foregroundHwnd != myHwnd)
             {
-                if (_overlayWindow.Visibility != Visibility.Collapsed) 
+                if (_overlayWindow.Visibility != Visibility.Collapsed)
                     _overlayWindow.Visibility = Visibility.Collapsed;
                 return;
             }
             else
             {
-                if (_overlayWindow.Visibility != Visibility.Visible) 
+                if (_overlayWindow.Visibility != Visibility.Visible)
                     _overlayWindow.Visibility = Visibility.Visible;
             }
 #endif
