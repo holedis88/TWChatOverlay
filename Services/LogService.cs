@@ -129,7 +129,7 @@ namespace TWChatOverlay.Services
 
         #endregion
 
-        #region 5. 데이터 처리 (Content Processing)
+        #region Processing
 
         /// <summary>
         /// 읽어온 원문 HTML을 <br> 태그 단위로 쪼개어 이벤트를 발생

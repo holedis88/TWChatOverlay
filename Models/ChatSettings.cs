@@ -29,6 +29,7 @@ namespace TWChatOverlay.Models
 
         private double _fontSize = 15.0;
         private double _lineMargin = 25.0;
+        private double _lineMarginLeft = 0.0;
 
         private long _totalExp = 0;
 
@@ -50,7 +51,8 @@ namespace TWChatOverlay.Models
         public double WindowWidth { get; set; } = 538.0;
         public double WindowHeight { get; set; } = 200.0;
         public double FontSize { get => _fontSize; set { _fontSize = value; OnPropertyChanged(); } }
-        public double LineMargin { get => _lineMargin; set { _lineMargin = value; OnPropertyChanged(); } }
+        public double LineMargin { get => _lineMargin; set { _lineMargin = Math.Max(-100, value); OnPropertyChanged(); } }
+        public double LineMarginLeft { get => _lineMarginLeft; set { _lineMarginLeft = value; OnPropertyChanged(); } }
         public string FontFamily { get => _fontFamily; set { _fontFamily = value; OnPropertyChanged(); } }
         public string NormalColor { get => _normalColor; set { _normalColor = value; OnPropertyChanged(); } }
         public string TeamColor { get => _teamColor; set { _teamColor = value; OnPropertyChanged(); } }

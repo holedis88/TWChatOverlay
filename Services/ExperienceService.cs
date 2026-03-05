@@ -13,7 +13,6 @@ namespace TWChatOverlay.Services
         {
             _settings = settings;
 
-            // 3초마다 디스플레이 갱신 타이머 설정
             _expTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(3000) };
             _expTimer.Tick += (s, e) => _settings.RefreshExpDisplay();
         }

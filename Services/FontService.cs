@@ -15,7 +15,6 @@ namespace TWChatOverlay.Services
         /// </summary>
         public static FontFamily GetFont(string fontFamilyName)
         {
-            // 1. 사용자 설정 폰트인 경우
             if (fontFamilyName == "사용자 설정")
             {
                 if (File.Exists(UserFontPath))
@@ -30,17 +29,15 @@ namespace TWChatOverlay.Services
                     }
                     catch
                     {
-                        // 폰트 파일이 깨졌거나 읽을 수 없는 경우 기본값으로 이동
+                        return new FontFamily("Malgun Gothic");
                     }
                 }
             }
-            // 2. 시스템 폰트 이름이 지정된 경우
             else if (!string.IsNullOrEmpty(fontFamilyName))
             {
                 return new FontFamily(fontFamilyName);
             }
 
-            // 3. 기본값 반환 (맑은 고딕)
             return new FontFamily("Malgun Gothic");
         }
     }

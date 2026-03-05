@@ -184,6 +184,14 @@ namespace TWChatOverlay
         #endregion
 
         #region Settings
+        /// <summary>
+        /// 0-9 숫자와 마이너스(-) 기호가 아닌 문자가 들어오면 true를 반환하여 입력을 차단
+        /// </summary>
+        private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex("[^0-9-]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
 
         /// <summary>
         /// 설정 데이터 모델의 값이 변경될 때 UI를 갱신
@@ -340,7 +348,23 @@ namespace TWChatOverlay
                 _settings.WindowWidth = newWidth;
             }
         }
+        private void OffsetInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var textBox = sender as TextBox;
+                var binding = textBox?.GetBindingExpression(TextBox.TextProperty);
+                binding?.UpdateSource();
 
+                Keyboard.ClearFocus();
+            }
+        }
+
+        private void OffsetInput_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ConfigService.Save(_settings);
+            _stickyService?.UpdatePositionImmediately();
+        }
         #endregion
 
         #region Exit

@@ -187,14 +187,33 @@
                                                 Value="{Binding FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                 TickFrequency="1" IsSnapToTickEnabled="True"/>
                                         </DockPanel>
-
-                                        <TextBlock Text="채팅창 높이" Foreground="#CCC" FontSize="15" FontWeight="Bold" Margin="0,15,0,8"/>
+                                    
                                         <DockPanel Margin="0,5">
-                                            <TextBlock Text="높이" Foreground="White" FontSize="12" Width="35" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding LineMargin, StringFormat={}{0:F0}}" Foreground="#AAA" FontSize="18" DockPanel.Dock="Right" Width="35" TextAlignment="Right"/>
-                                            <Slider Minimum="0" Maximum="50" 
-                Value="{Binding LineMargin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                TickFrequency="1" IsSnapToTickEnabled="True"/>
+                                            <TextBlock Text="X좌표 (좌우)" Foreground="White" FontSize="12" Width="80" VerticalAlignment="Center"/>
+
+                                            <TextBox Text="{Binding LineMarginLeft, UpdateSourceTrigger=LostFocus}" 
+                 Width="100" Height="25" 
+                 Background="#444" Foreground="White" 
+                 BorderThickness="1" BorderBrush="#888"
+                 VerticalContentAlignment="Center" TextAlignment="Center"
+                 DockPanel.Dock="Right"
+                 KeyDown="OffsetInput_KeyDown" 
+                 LostFocus="OffsetInput_LostFocus" 
+                 PreviewTextInput="NumberOnly_PreviewTextInput"/>
+                                        </DockPanel>
+
+                                        <DockPanel Margin="0,5">
+                                            <TextBlock Text="Y좌표 (상하)" Foreground="White" FontSize="12" Width="80" VerticalAlignment="Center"/>
+
+                                            <TextBox Text="{Binding LineMargin, UpdateSourceTrigger=LostFocus}" 
+                 Width="100" Height="25" 
+                 Background="#444" Foreground="White" 
+                 BorderThickness="1" BorderBrush="#888"
+                 VerticalContentAlignment="Center" TextAlignment="Center"
+                 DockPanel.Dock="Right"
+                 KeyDown="OffsetInput_KeyDown" 
+                 LostFocus="OffsetInput_LostFocus" 
+                 PreviewTextInput="NumberOnly_PreviewTextInput"/>
                                         </DockPanel>
                                     </StackPanel>
                                 </Grid>
