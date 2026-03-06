@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
 namespace TWChatOverlay.Services
 {
     public class HotKeyService : IDisposable
     {
-        [DllImport("user32.dll")]
-        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
-        [DllImport("user32.dll")]
-        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
         public const int EXIT_HOTKEY_ID = 9001;
-        public const uint MOD_ALT = 0x0001;
-        public const uint VK_F1 = 0x70;
+        public const int TOGGLE_OVERLAY_ID = 9002;
+        public const int TOGGLE_ADDON_ID = 9003;
 
-        private const int WM_HOTKEY = 0x0312;
+        public const uint MOD_ALT = 0x0001;
+        public const uint VK_F1 = 0x70; // F1 키
+        public const uint VK_F2 = 0x71; // F2 키
+        public const uint VK_F3 = 0x72; // F3 키
 
         private readonly IntPtr _handle;
         private readonly HwndSource _source;
@@ -30,17 +27,17 @@ namespace TWChatOverlay.Services
 
         public bool Register(int id, uint modifiers, uint vk)
         {
-            return RegisterHotKey(_handle, id, modifiers, vk);
+            return NativeMethods.RegisterHotKey(_handle, id, modifiers, vk);
         }
 
         public void Unregister(int id)
         {
-            UnregisterHotKey(_handle, id);
+            NativeMethods.UnregisterHotKey(_handle, id);
         }
 
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == WM_HOTKEY)
+            if (msg == NativeMethods.WM_HOTKEY)
             {
                 int id = wParam.ToInt32();
                 HotKeyPressed?.Invoke(id);

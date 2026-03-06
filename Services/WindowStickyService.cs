@@ -132,15 +132,5 @@ namespace TWChatOverlay.Services
                 UpdatePosition();
             }), System.Windows.Threading.DispatcherPriority.Render);
         }
-
-        private static class NativeMethods
-        {
-            [System.Runtime.InteropServices.DllImport("user32.dll")]
-            public static extern uint GetDpiForWindow(IntPtr hwnd);
-
-            [System.Runtime.InteropServices.DllImport("user32.dll")]
-            [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-            public static extern bool IsWindow(IntPtr hWnd);
-        }
     }
 }

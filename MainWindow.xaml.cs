@@ -27,6 +27,8 @@ namespace TWChatOverlay
         private ChatSettings _settings;
         private LogService _logService;
 
+        private bool _isOverlayVisible = true;
+
         private readonly List<LogParser.ParseResult> _allParsedLogs = new();
         private string _currentTabTag = "All";
 
@@ -72,8 +74,27 @@ namespace TWChatOverlay
                 IntPtr handle = new WindowInteropHelper(this).EnsureHandle();
 
                 _hotKeyService = new HotKeyService(handle);
-                _hotKeyService.HotKeyPressed += (id) => { if (id == HotKeyService.EXIT_HOTKEY_ID) ConfirmExit(); };
-                _hotKeyService.Register(HotKeyService.EXIT_HOTKEY_ID, HotKeyService.MOD_ALT, HotKeyService.VK_F1);
+                _hotKeyService.Register(HotKeyService.EXIT_HOTKEY_ID, HotKeyService.MOD_ALT, HotKeyService.VK_F1);    // Alt + F1: Exit
+                _hotKeyService.Register(HotKeyService.TOGGLE_OVERLAY_ID, HotKeyService.MOD_ALT, HotKeyService.VK_F2); // Alt + F2: Display toggle
+                _hotKeyService.Register(HotKeyService.TOGGLE_ADDON_ID, HotKeyService.MOD_ALT, HotKeyService.VK_F3);     // Alt + F3: Addon
+
+                _hotKeyService.HotKeyPressed += (id) =>
+                {
+                    switch (id)
+                    {
+                        case HotKeyService.EXIT_HOTKEY_ID:
+                            ConfirmExit();
+                            break;
+
+                        case HotKeyService.TOGGLE_OVERLAY_ID:
+                            ToggleOverlayVisibility();
+                            break;
+
+                        case HotKeyService.TOGGLE_ADDON_ID:
+                            ToggleAddonVisibility();
+                            break;
+                    }
+                };
 
                 _stickyService = new WindowStickyService(this, _settings);
                 _stickyService.Start();
@@ -88,6 +109,45 @@ namespace TWChatOverlay
             }
         }
 
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+
+            var hwnd = new WindowInteropHelper(this).Handle;
+            int extendedStyle = NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE);
+
+            // WS_EX_TRANSPARENT: 클릭 관통
+            // WS_EX_NOACTIVATE: 창이 활성화(포커스)되는 것을 방지
+            NativeMethods.SetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE,
+                extendedStyle | NativeMethods.WS_EX_NOACTIVATE);
+
+            var helper = new WindowInteropHelper(this);
+            NativeMethods.SetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE,
+                NativeMethods.GetWindowLong(helper.Handle, NativeMethods.GWL_EXSTYLE) | 0x00000080);
+        }
+
+        private void ToggleAddonVisibility()
+        {
+
+        }
+
+        private void ToggleOverlayVisibility()
+        {
+            _isOverlayVisible = !_isOverlayVisible;
+
+            if (_isOverlayVisible)
+            {
+                // 완벽히 투명하게 만들고 마우스 클릭도 무시하게 설정
+                this.Opacity = 0;
+                this.IsHitTestVisible = false;
+            }
+            else
+            {
+                // 다시 보이게 하고 클릭 허용
+                this.Opacity = 1;
+                this.IsHitTestVisible = true;
+            }
+        }
         #endregion
 
         #region Processing
