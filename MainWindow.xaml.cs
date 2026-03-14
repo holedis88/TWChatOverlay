@@ -22,15 +22,22 @@ namespace TWChatOverlay
 
         // 주요 서비스 객체들
         private ExperienceService _expService;
-        private HotKeyService _hotKeyService;
-        private WindowStickyService _stickyService;
+        private HotKeyService? _hotKeyService;
+        private WindowStickyService? _stickyService;
         private ChatSettings _settings;
         private LogService _logService;
 
         private bool _isOverlayVisible = true;
 
-        private readonly List<LogParser.ParseResult> _allParsedLogs = new();
-        private string _currentTabTag = "All";
+        private readonly Dictionary<string, List<LogParser.ParseResult>> _tabLogBuffers = new()
+        {
+            { "Basic", new List<LogParser.ParseResult>() },
+            { "Team", new List<LogParser.ParseResult>() },
+            { "Club", new List<LogParser.ParseResult>() },
+            { "Shout", new List<LogParser.ParseResult>() },
+            { "System", new List<LogParser.ParseResult>() }
+        };
+        private string _currentTabTag = "Basic";
 
         public static readonly DependencyProperty CurrentFontProperty =
             DependencyProperty.Register("CurrentFont", typeof(FontFamily), typeof(MainWindow));
@@ -54,14 +61,12 @@ namespace TWChatOverlay
 
             _expService = new ExperienceService(_settings);
             _logService = new LogService();
-            _logService.OnNewLogRead += (html) => Dispatcher.Invoke(() => AppendNewLogs(html));
-
+            _logService.OnNewLogRead += (html) => Dispatcher.BeginInvoke(new Action(() => AppendNewLogs(html)), DispatcherPriority.Background);
+            _logService.Initialize();
+            Dispatcher.BeginInvoke(new Action(() => RefreshLogDisplay()), DispatcherPriority.Loaded);
             ApplyInitialSettings();
 
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                InitializeNativeServices();
-            }), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(() => InitializeNativeServices()), DispatcherPriority.Loaded);
         }
 
         /// <summary>
@@ -137,13 +142,11 @@ namespace TWChatOverlay
 
             if (_isOverlayVisible)
             {
-                // 완벽히 투명하게 만들고 마우스 클릭도 무시하게 설정
                 this.Opacity = 0;
                 this.IsHitTestVisible = false;
             }
             else
             {
-                // 다시 보이게 하고 클릭 허용
                 this.Opacity = 1;
                 this.IsHitTestVisible = true;
             }
@@ -159,7 +162,6 @@ namespace TWChatOverlay
         {
             if (string.IsNullOrWhiteSpace(html)) return;
 
-            // 1) 로그 파싱
             var parseResult = LogParser.ParseLine(html, _settings);
             if (!parseResult.IsSuccess) return;
 
@@ -168,13 +170,34 @@ namespace TWChatOverlay
             if (!parseResult.IsHighlight && _settings.UseAlertColor)
                 parseResult.Brush = _settings.GetBrush(parseResult.Category);
 
-            _allParsedLogs.Add(parseResult);
-            if (_allParsedLogs.Count > 400) _allParsedLogs.RemoveAt(0);
+            if (LogParser.IsVisible(parseResult.Category, _settings))
+            {
+                AddToBuffer("Basic", parseResult);
+            }
+
+            if (parseResult.Category == ChatCategory.Team) AddToBuffer("Team", parseResult);
+            else if (parseResult.Category == ChatCategory.Club) AddToBuffer("Club", parseResult);
+            else if (parseResult.Category == ChatCategory.Shout) AddToBuffer("Shout", parseResult);
+            else if (parseResult.Category is ChatCategory.System or ChatCategory.System2 or ChatCategory.System3)
+                AddToBuffer("System", parseResult);
 
             if (parseResult.IsHighlight || LogParser.IsMatchTab(parseResult, _currentTabTag, _settings))
             {
                 AddToUI(parseResult);
             }
+        }
+
+        /// <summary>
+        /// 200개 제한을 유지
+        /// </summary>
+        private void AddToBuffer(string tabName, LogParser.ParseResult log)
+        {
+            if (!_tabLogBuffers.ContainsKey(tabName)) return;
+
+            var buffer = _tabLogBuffers[tabName];
+            buffer.Add(log);
+
+            if (buffer.Count > 200) buffer.RemoveAt(0);
         }
 
         /// <summary>
@@ -207,7 +230,7 @@ namespace TWChatOverlay
             blocks.Add(p);
 
             if (blocks.Count > 200) blocks.Remove(blocks.FirstBlock);
-            LogDisplay.ScrollToEnd();
+            Dispatcher.BeginInvoke(new Action(LogDisplay.ScrollToEnd), DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -224,13 +247,12 @@ namespace TWChatOverlay
                 {
                     LogDisplay.Document.Blocks.Clear();
 
-                    var filteredLogs = _allParsedLogs
-                        .Where(log => LogParser.IsMatchTab(log, _currentTabTag, _settings))
-                        .TakeLast(200);
-
-                    foreach (var log in filteredLogs)
+                    if (_tabLogBuffers.TryGetValue(_currentTabTag, out var logs))
                     {
-                        AddToUI(log);
+                        foreach (var log in logs)
+                        {
+                            AddToUI(log);
+                        }
                     }
                 }
                 finally
@@ -256,7 +278,7 @@ namespace TWChatOverlay
         /// <summary>
         /// 설정 데이터 모델의 값이 변경될 때 UI를 갱신
         /// </summary>
-        private void OnSettingsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnSettingsPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -308,7 +330,7 @@ namespace TWChatOverlay
         {
             if (sender is not RadioButton btn || btn.Tag == null) return;
 
-            _currentTabTag = btn.Tag.ToString();
+            _currentTabTag = btn.Tag.ToString() ?? string.Empty;
 
             LogDisplay.Visibility = (_currentTabTag is "Settings" or "Addon") ? Visibility.Collapsed : Visibility.Visible;
             SettingsDisplay.Visibility = (_currentTabTag == "Settings") ? Visibility.Visible : Visibility.Collapsed;
@@ -336,9 +358,12 @@ namespace TWChatOverlay
                 string hex = $"#{dialog.Color.R:X2}{dialog.Color.G:X2}{dialog.Color.B:X2}";
                 _settings.UpdateColor(btn.Tag?.ToString() ?? "", hex);
 
-                foreach (var log in _allParsedLogs)
+                foreach (var buffer in _tabLogBuffers.Values)
                 {
-                    log.Brush = _settings.GetBrush(log.Category);
+                    foreach (var log in buffer)
+                    {
+                        log.Brush = _settings.GetBrush(log.Category);
+                    }
                 }
 
                 SettingsDisplay.DataContext = null;

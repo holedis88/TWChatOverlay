@@ -31,6 +31,7 @@ namespace TWChatOverlay.Models
         private double _lineMargin = 25.0;
         private double _lineMarginLeft = 0.0;
 
+        private long _lastGainedExp = 0;
         private long _totalExp = 0;
 
         private List<string> _parsedKeywords = new();
@@ -74,8 +75,27 @@ namespace TWChatOverlay.Models
         }
 
         [JsonIgnore]
+        public string LastGainedExpDisplay => _lastGainedExp > 0 ? $"+{FormatExp(_lastGainedExp)}" : "";
+
+        [JsonIgnore]
+        public bool HasLastExp => _lastGainedExp > 0;
+
+        [JsonIgnore]
         public List<string> ParsedKeywords => _parsedKeywords;
 
+        [JsonIgnore]
+        public long LastGainedExp
+        {
+            get => _lastGainedExp;
+            set
+            {
+                if (_lastGainedExp == value) return;
+                _lastGainedExp = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(LastGainedExpDisplay));
+                OnPropertyChanged(nameof(HasLastExp)); // UI 숨김/표시 제어용
+            }
+        }
 
         [JsonIgnore]
         public long TotalExp
@@ -99,7 +119,10 @@ namespace TWChatOverlay.Models
                 TimeSpan elapsed = DateTime.Now - _startTime;
                 double hours = elapsed.TotalHours;
 
-                if (hours < 0.0027 || _totalExp == 0) return $"{currentExp} | 0.0/h";
+                if (_totalExp == 0 || elapsed.TotalSeconds < 30)
+                {
+                    return "   측정 대기 중...   ";
+                }
 
                 long expPerHour = (long)(_totalExp / hours);
                 return $"{currentExp} | {FormatExp(expPerHour)}/h";
@@ -141,6 +164,13 @@ namespace TWChatOverlay.Models
                 double eok = value / 100_000_000.0;
                 return $"{Math.Floor(eok * 10) / 10.0:F1}억";
             }
+            if (value >= 10_000)
+            {
+                double man = (double)value / 10_000;
+                // 소수점 첫째 자리까지 표시 (예: 350.5만)
+                return $"{man:N1}만";
+            }
+
             return value.ToString("N0");
         }
 
@@ -202,7 +232,7 @@ namespace TWChatOverlay.Models
 
             try
             {
-                return (SolidColorBrush)new BrushConverter().ConvertFromString(hex) ?? Brushes.White;
+                return new BrushConverter().ConvertFromString(hex) as SolidColorBrush ?? Brushes.White;
             }
             catch
             {

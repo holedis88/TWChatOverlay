@@ -26,6 +26,7 @@ namespace TWChatOverlay.Services
         public void AddExp(long gained)
         {
             if (gained <= 0) return;
+            _settings.LastGainedExp = gained;
             _settings.TotalExp += gained;
         }
 
@@ -34,6 +35,7 @@ namespace TWChatOverlay.Services
         /// </summary>
         public void Reset()
         {
+            _settings.LastGainedExp = 0;
             _settings.TotalExp = 0;
             _settings.ResetStartTime();
         }

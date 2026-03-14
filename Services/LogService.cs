@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,8 +30,6 @@ namespace TWChatOverlay.Services
         public LogService()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            UpdatePath();
             _pollingTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _pollingTimer.Tick += (s, e) =>
             {
@@ -45,6 +44,13 @@ namespace TWChatOverlay.Services
         #endregion
 
         #region Path Management
+        /// <summary>
+        /// MainWindow에서 이벤트를 연결한 후 명시적으로 호출해야 합니다.
+        /// </summary>
+        public void Initialize()
+        {
+            UpdatePath();
+        }
 
         /// <summary>
         /// 날짜가 변경되었는지 확인하고 필요시 경로를 업데이트
@@ -70,8 +76,9 @@ namespace TWChatOverlay.Services
 
             if (File.Exists(_logPath))
             {
-                LoadInitialLogs(300);
-                _lastPosition = new FileInfo(_logPath).Length;
+                LoadInitialLogs(1000);
+                var fileInfo = new FileInfo(_logPath);
+                _lastPosition = fileInfo.Length;
             }
             else
             {
@@ -91,10 +98,48 @@ namespace TWChatOverlay.Services
             try
             {
                 using var stream = new FileStream(_logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                using var reader = new StreamReader(stream, Encoding.GetEncoding(949));
+                if (stream.Length == 0) return;
 
-                string allContent = reader.ReadToEnd();
-                ProcessRawContent(allContent, lineCount);
+                long position = stream.Length - 1;
+                int count = 0;
+                List<byte> lineBuffer = new List<byte>();
+                List<string> foundLines = new List<string>();
+
+                while (position >= 0 && count < lineCount)
+                {
+                    stream.Seek(position, SeekOrigin.Begin);
+                    int b = stream.ReadByte();
+
+                    if (b == 10)
+                    {
+                        if (lineBuffer.Count > 0)
+                        {
+                            lineBuffer.Reverse();
+                            string line = Encoding.GetEncoding(949).GetString(lineBuffer.ToArray());
+                            foundLines.Add(line);
+                            lineBuffer.Clear();
+                            count++;
+                        }
+                    }
+                    else if (b != 13)
+                    {
+                        lineBuffer.Add((byte)b);
+                    }
+                    position--;
+                }
+
+                if (lineBuffer.Count > 0 && count < lineCount)
+                {
+                    lineBuffer.Reverse();
+                    foundLines.Add(Encoding.GetEncoding(949).GetString(lineBuffer.ToArray()));
+                }
+
+                foundLines.Reverse();
+
+                foreach (var line in foundLines)
+                {
+                    OnNewLogRead?.Invoke(line.Trim());
+                }
             }
             catch (Exception ex)
             {
@@ -136,6 +181,7 @@ namespace TWChatOverlay.Services
         /// </summary>
         private void ProcessRawContent(string content, int takeLastCount = -1)
         {
+            /*
             if (string.IsNullOrWhiteSpace(content)) return;
 
             string[] lines = BrTagRegex.Split(content);
@@ -147,6 +193,22 @@ namespace TWChatOverlay.Services
             }
 
             foreach (var line in validLines)
+            {
+                OnNewLogRead?.Invoke(line.Trim());
+            }
+            */
+            if (string.IsNullOrWhiteSpace(content)) return;
+
+            var lines = BrTagRegex.Split(content)
+                                  .Where(l => !string.IsNullOrWhiteSpace(l))
+                                  .ToList();
+
+            if (takeLastCount > 0 && lines.Count > takeLastCount)
+            {
+                lines = lines.Skip(lines.Count - takeLastCount).ToList();
+            }
+
+            foreach (var line in lines)
             {
                 OnNewLogRead?.Invoke(line.Trim());
             }
